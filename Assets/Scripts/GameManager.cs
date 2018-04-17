@@ -4,9 +4,21 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+public class JsonHelper{
+    public static T[] getJsonArray<T>(string json) {
+        string newJson = "{\array\": " + json + "}";
+        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+        return wrapper.array;
+    }
 
+    [System.Serializable]
+    class Wrapper<T> {
+        public T[] array;
+    }
+    }
 public class GameManager : MonoBehaviour {
     string url = "http://dev.motivatedplay.com/api";
+    GameCollection gameCollection;
     // Use this for initialization
     IEnumerator Start()
     {
@@ -22,15 +34,16 @@ public class GameManager : MonoBehaviour {
         form.AddField("prize_number", "1");
         form.AddField("public", "true");
         UnityWebRequest wr2 = UnityWebRequest.Post(url+ "/games/create/", form);
-        */
+        
         UnityWebRequest wr2 = UnityWebRequest.Get(url + "/games/list");
-        StreamWriter r = new StreamWriter(Application.dataPath + "/juj.json");
         wr2.SetRequestHeader("Authorization","Basic Y2hlbXNoZW5pazpOeWFzaGFfMjE=");
         yield return wr2.SendWebRequest();
-        GameCollection game = JsonUtility.FromJson<GameCollection>(wr2.downloadHandler.text);
-        //r.WriteLine(JsonUtility.FromJson<Game>(wr2.downloadHandler.text));
-        r.Close();
-        Debug.Log(wr2.downloadHandler.text);
+        string json = System.Text.Encoding.UTF8.GetString(wr2.downloadHandler.data);
+        Game[] s = JsonHelper.getJsonArray<Game>(json);
+        //Debug.Log(wr2.downloadHandler.text);
+        //Debug.Log(s[0].title);
+        */
+        
     }
     // Update is called once per frame
     void Update () {
