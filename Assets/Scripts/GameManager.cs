@@ -22,28 +22,43 @@ public class GameManager : MonoBehaviour {
     // Use this for initialization
     IEnumerator Start()
     {
-        /*
-        WWWForm form = new WWWForm();
-        form.AddField("title", "Ewwe");
-        form.AddField("description", "Sdsd");
-        form.AddField("catergory", "9");
-        form.AddField("currency", "1");
-        form.AddField("max_players", "2");
-        form.AddField("min_players", "2");
-        form.AddField("minimal_rate", "100");
-        form.AddField("prize_number", "1");
-        form.AddField("public", "true");
-        UnityWebRequest wr2 = UnityWebRequest.Post(url+ "/games/create/", form);
-        
-        UnityWebRequest wr2 = UnityWebRequest.Get(url + "/games/list");
-        wr2.SetRequestHeader("Authorization","Basic Y2hlbXNoZW5pazpOeWFzaGFfMjE=");
-        yield return wr2.SendWebRequest();
-        string json = System.Text.Encoding.UTF8.GetString(wr2.downloadHandler.data);
-        Game[] s = JsonHelper.getJsonArray<Game>(json);
-        //Debug.Log(wr2.downloadHandler.text);
-        //Debug.Log(s[0].title);
-        */
-        
+        Hashtable data = new Hashtable();
+        data.Add("title", "Game_02");
+        data.Add("description", "Best game ever!");
+        data.Add("currency", "1");
+        data.Add("min_players", "2");
+        data.Add("max_players", "2");
+        data.Add("minimal_rate", "100");
+        data.Add("prize_number", "1");
+
+
+        /* UnityHTTP.Request someRequest = new UnityHTTP.Request("post", "http://someurl.com/some/post/handler", form);
+         someRequest.Send((request) => {
+             // parse some JSON, for example:
+             bool result = false;
+             Hashtable thing = (Hashtable)JSON.JsonDecode(request.response.Text, ref result);
+             if (!result)
+             {
+                 Debug.LogWarning("Could not parse JSON response!");
+                 return;
+             }
+         });*/
+        UnityHTTP.Request someRequest = new UnityHTTP.Request("post", "http://dev.motivatedplay.com/api/games/create/", data);
+
+        someRequest.SetHeader("Authorization", "Basic Y2hlbXNoZW5pazpOeWFzaGFfMjE=");
+        someRequest.SetHeader("Content-Type", "application/json");
+        someRequest.Send();
+
+        while (!someRequest.isDone)
+        {
+            yield return null;
+        }
+
+        // parse some JSON, for example:
+        var thing =  JSON.JsonDecode  (someRequest.response.Text) ;
+
+        yield return null;
+
     }
     // Update is called once per frame
     void Update () {
